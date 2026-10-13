@@ -58,10 +58,10 @@ public final class UpdateCenter {
      * 旧的「直连优先」会一路卡在慢源上（以前快是因为直连被秒重置、立刻落到镜像）。
      */
     private static final String[] API_URLS = {
-            "https://gh-proxy.com/https://api.github.com/repos/955xiaolan520/Dsu-Manager/releases/latest",
-            "https://ghfast.top/https://api.github.com/repos/955xiaolan520/Dsu-Manager/releases/latest",
-            "https://ghproxy.net/https://api.github.com/repos/955xiaolan520/Dsu-Manager/releases/latest",
-            "https://api.github.com/repos/955xiaolan520/Dsu-Manager/releases/latest",
+            "https://gh-proxy.com/https://api.github.com/repos/lsy6803/PDNA/releases/latest",
+            "https://ghfast.top/https://api.github.com/repos/lsy6803/PDNA/releases/latest",
+            "https://ghproxy.net/https://api.github.com/repos/lsy6803/PDNA/releases/latest",
+            "https://api.github.com/repos/lsy6803/PDNA/releases/latest",
     };
     /** APK 下载地址前缀：v3.40.11 镜像优先，空串 = 直连垫底 */
     private static final String[] DL_PREFIXES = {
@@ -73,7 +73,7 @@ public final class UpdateCenter {
     // v3.42.12：慢速看门狗已随单线程下载移除 —— Aria2c 多线程自带 45 秒无进展切线路机制
 
     private static final String REPO_PAGE =
-            "https://github.com/955xiaolan520/Dsu-Manager/releases";
+            "https://github.com/lsy6803/PDNA/releases";
 
     /** 本次进程是否已做过启动自动检查（避免每次 onResume 重复弹窗） */
     private static volatile boolean sAutoChecked;
