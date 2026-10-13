@@ -1,0 +1,99 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INSTALL_DYNAMIC_SYSTEM" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MANAGE_DYNAMIC_SYSTEM" />
+    <uses-permission android:name="android.permission.MANAGE_USERS" />
+    <uses-permission android:name="android.permission.REBOOT" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <!-- v3.9.13 「打开文件位置」选择器需要看到其他文件管理器（Android 11+ 包可见性） -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="content" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="file" />
+        </intent>
+    </queries>
+    <application android:name=".DsuManagerApplication" android:theme="@style/AppTheme" android:label="DNA管理器" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:supportsRtl="true" android:requestLegacyExternalStorage="true" android:extractNativeLibs="true" android:enableOnBackInvokedCallback="false" android:largeHeap="true">
+        <activity android:name=".launch.LaunchActivity" android:exported="false" android:theme="@style/Theme.Launch" />
+        <activity android:name=".OnboardingActivity" android:screenOrientation="portrait" android:exported="true" android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SettingsActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".RomActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DownloadManagerActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DsuDirectoryPickerActivity" android:screenOrientation="portrait" android:exported="false" android:theme="@style/AppTheme" />
+        <activity android:name=".VivoActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".OPlusActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".OPlusLookupActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".OPlusOtaActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".OppoSystemUpdateActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".PayloadDumperActivity" android:screenOrientation="portrait" android:exported="false" />
+        <!-- v3.10.0 DNA 工具箱：镜像分解 / 打包 / 转换工作台 -->
+        <activity android:name=".DnaActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaModuleActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaBinActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaIncrementalActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaOtaActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaSuperActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DnaUnzipActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".ThanksActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".OtaMergeActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".RomPackActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".RootfsFilesActivity" android:screenOrientation="portrait" android:exported="false" />
+        <service android:name=".DownloadService" android:exported="false" android:stopWithTask="false" android:foregroundServiceType="dataSync" />
+        <!-- v3.9.13 PackageInstaller 自更新安装结果回调（显式 PendingIntent，无需导出） -->
+        <receiver android:name=".UpdateInstallReceiver" android:exported="false" />
+        <activity android:name=".MoreActivity" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".LinuxTerminalActivity" android:theme="@style/LinuxTerminalTheme" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".AlpineTerminalActivity" android:theme="@style/LinuxTerminalTheme" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".UbuntuTerminalActivity" android:theme="@style/LinuxTerminalTheme" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".DebianTerminalActivity" android:theme="@style/LinuxTerminalTheme" android:screenOrientation="portrait" android:exported="false" />
+        <activity android:name=".LocalTerminalActivity" android:theme="@style/LinuxTerminalTheme" android:screenOrientation="portrait" android:exported="false" />
+        <!-- v3.51.97: 工资工时记账系统 -->
+        <activity android:name=".SalaryActivity" android:screenOrientation="portrait" android:exported="false" />
+        <!-- v3.52.1: 独立设置页面 -->
+        <activity android:name=".SalarySettingsActivity" android:screenOrientation="portrait" android:exported="false" />
+        <!-- v3.53.0: 统计图表 -->
+        <activity android:name=".SalaryStatsActivity" android:screenOrientation="portrait" android:exported="false" />
+        <!-- v3.53.0: 桌面小部件 -->
+        <receiver android:name=".SalaryWidget" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.dsu.xyg.RECORD_DAY" />
+                <action android:name="com.dsu.xyg.RECORD_NIGHT" />
+                <action android:name="com.dsu.xyg.RECORD_OVERTIME" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_salary_info" />
+        </receiver>
+        <provider
+            android:name=".UpdateFileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>

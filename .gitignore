@@ -1,0 +1,14 @@
+.tools/
+app/build/
+**/build/
+**/.cxx/
+**/.kotlin/
+*.iml
+.gradle/
+*.apk
+*.jks
+*.keystore
+local.properties
+public/
+app/src/main/java/com/probiotics/xiaoni/ui/
+.monkeycode-tmp-files/

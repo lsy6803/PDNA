@@ -1,0 +1,107 @@
+package com.mytiantian.updater.vivo
+
+/** IMEI 输入框当前值的来源，决定卡片里显示的提示文案。 */
+enum class ImeiSource {
+    /** 自动读取到的本机 IMEI。 */
+    DEVICE,
+
+    /** 本机读不到时自动补的随机值。 */
+    RANDOM,
+
+    /** 用户手动填写。 */
+    MANUAL
+}
+
+data class VivoOtaResult(
+    val updateVersion: String = "",
+    val filename: String = "",
+    val fileSizeBytes: String = "",
+    val fileSizeMb: String = "",
+    val downloadUrl: String = "",
+    val changelogUrl: String = "",
+    val securityPatch: String = "",
+    val updateDate: String = "",
+    val md5: String,
+    val channel: String = "NORMAL",
+    /**
+     * 服务端实际返回的包类型（响应 ext.isFull）：true=全量包 false=增量包。
+     * null = 响应未携带该标志（旧服务器/无更新时），UI 应回退到查询时选择的包类型。
+     */
+    val isFullPackage: Boolean? = null,
+    /**
+     * 用户请求全量包但服务器无全量（retcode=210），自动降级 isFull=0 查到增量包。
+     * true 时 UI 应明确提示"服务器暂无全量包"，避免用户误以为查询异常。
+     * 实测结论：vivo 仅对"基准=最新版"的请求下发同版本全量重刷包（如 X200），
+     * 新机型全量包通常晚于增量包数天至数周上架。
+     */
+    val fullFallback: Boolean = false,
+    /**
+     * v3.9.20：/beta/queryBetaOrTaste.do（逆向自 vivo17 系统升级 APP PublicBetaOrTrialCheckTask，
+     * 公测/内测/尝鲜的主查询入口）的响应 data.type：
+     * 0 = 未走该接口或无数据；1 = 公测招募信息（无升级包）；2 = 内测/尝鲜更新包（响应结构与普通升级一致）。
+     */
+    val betaOrTasteType: Int = 0,
+    /** type=1 时的公测招募摘要（项目版本/推送计划等），供 UI 展示。 */
+    val betaRecruitHint: String = "",
+    val rawResponse: String = "",
+    /** 调试日志：记录查询过程的关键信息，供故障排查使用。 */
+    val debugLog: String = ""
+)
+
+data class QueryHistoryEntry(
+    val timestamp: Long,
+    val model: String,
+    val codename: String,
+    val swVersion: String,
+    val resultVersion: String,
+    val fileSize: String,
+    val downloadUrl: String,
+    val channel: String = "NORMAL",
+    // ===== 查询条件（用于一键回填表单）=====
+    val querySoftwareVersion: String = "",
+    val manualMode: Boolean = false,
+    val manualCodename: String = "",
+    val manualModelSwVer: String = "",
+    val manualModelName: String = "",
+    val androidVersion: Int = 15,
+    val deviceType: String = "phone",
+    val isFullPackage: Boolean = true,
+    val queryChannel: String = "NORMAL",
+    val queryDomain: String = "CN",
+    val changelogUrl: String = ""
+)
+
+data class VivoOtaUiState(
+    val selectedSeries: String = "X 系列",
+    val selectedModelIndex: Int = 0,
+    val selectedModel: String = "",
+    val selectedCodename: String = "",
+    val selectedModelSwVer: String = "",
+    val deviceType: String = "phone",
+    val softwareVersion: String = "15.0.33.7.W10",
+    // ADR-003 D2：false = 版本号仍处于「自动跟随机型」状态，切机型时可被覆盖；
+    //            true  = 用户手动编辑过，此后切机型一律不覆盖。
+    val isSwVersionCustom: Boolean = false,
+    val androidVersion: Int = 15,
+    val isCustomAndroidVersion: Boolean = false,
+    val customAndroidVersion: String = "",
+    val sn: String = "A0000000000000A",
+    val imei: String = "",
+    val imeiSource: ImeiSource = ImeiSource.RANDOM,
+    val isFullPackage: Boolean = true,
+    val queryChannel: String = "NORMAL",
+    val queryDomain: String = "CN",
+    val isLoading: Boolean = false,
+    val result: VivoOtaResult? = null,
+    val error: String? = null,
+    val cryptoReady: Boolean = false,
+    val manualMode: Boolean = false,
+    val manualCodename: String = "",
+    val manualModelSwVer: String = "",
+    val manualModelName: String = "",
+    val history: List<QueryHistoryEntry> = emptyList(),
+    val historySelectionMode: Boolean = false,
+    val selectedHistory: Set<Long> = emptySet(),
+    val toastMessage: String? = null,
+    val changelogContent: String? = null
+)
