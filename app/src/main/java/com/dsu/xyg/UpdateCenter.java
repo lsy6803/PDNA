@@ -396,7 +396,10 @@ public final class UpdateCenter {
             if (listener != null) listener.onStatus(english ? "Download cancelled" : "已取消更新下载");
         });
 
-        final File apk = new File(activity.getCacheDir(), "dsu-manager-update.apk");
+        // v3.55.59：下载到 /sdcard/PDNA/update/（用户可见，pm install 可直读，无需拷贝到 tmp）
+        File pdnaDir = new File("/sdcard/PDNA/update");
+        if (!pdnaDir.exists()) pdnaDir.mkdirs();
+        final File apk = new File(pdnaDir, "DNA_Manager_v" + info.version + ".apk");
         new Thread(() -> {
             Exception last = null;
             boolean done = false;
@@ -513,27 +516,50 @@ public final class UpdateCenter {
                     RootShell.INSTANCE.exec("appops set " + activity.getPackageName()
                             + " REQUEST_INSTALL_PACKAGES allow", 10000L, null);
                 } catch (Exception ignored) { }
-                // 流式静默安装：root 可读应用私有目录，经管道喂给 pm，不落 /data/local/tmp
+                // v3.55.59：APK 已在 /sdcard/PDNA/update/（world-readable），
+                // pm install 直接读路径，无需拷贝到 tmp，避免管道中断
                 ShellResult r = null;
                 try {
-                    r = RootShell.INSTANCE.exec("cat '" + apk.getAbsolutePath() + "' | pm install -r -",
+                    r = RootShell.INSTANCE.exec("pm install -r '" + apk.getAbsolutePath() + "'",
                             180000L, null);
                 } catch (Exception ignored) { }
                 if (r != null && r.getSuccess()) {
                     final boolean e = english;
                     activity.runOnUiThread(() -> {
+                        // v3.9.14：安装成功自动清理安装包
                         //noinspection ResultOfMethodCallIgnored
-                        apk.delete();   // v3.9.14：安装成功自动清理安装包
+                        apk.delete();
                         Toast.makeText(activity, e
                                 ? "✓ Update installed silently"
                                 : "✓ 已静默安装完成，安装包已自动清理", Toast.LENGTH_LONG).show();
                     });
                     return;
                 }
+                // ROOT pm install 失败 → 走系统安装器 Intent
+                final File apkFinal = apk;
+                activity.runOnUiThread(() -> installViaSystemInstaller(activity, apkFinal, english));
+                return;
             }
-            // ② 回退：PackageInstaller 会话式（原逻辑）
-            activity.runOnUiThread(() -> installViaPackageInstaller(activity, apk, english));
+            // ② 无 ROOT → 系统安装器 Intent（直接弹安装页，最可靠）
+            final File apkFinal2 = apk;
+            activity.runOnUiThread(() -> installViaSystemInstaller(activity, apkFinal2, english));
         }, "apk-silent-install").start();
+    }
+
+    /** 系统安装器 Intent（弹系统安装页让用户点「安装」，最可靠的兜底方案） */
+    private static void installViaSystemInstaller(Activity activity, File apk, boolean english) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(UpdateFileProvider.getUriForFile(activity, apk),
+                            "application/vnd.android.package-archive")
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(activity, english
+                    ? "Installer unavailable: " + e.getMessage()
+                    : "系统安装器不可用: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     /** ② PackageInstaller 会话式安装（免 root；Android 12+ 静默尽力而为，老系统拉确认页） */

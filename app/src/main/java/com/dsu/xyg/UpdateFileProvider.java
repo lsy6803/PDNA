@@ -13,6 +13,8 @@ import java.io.IOException;
 
 public final class UpdateFileProvider extends ContentProvider {
     private static final String PATH_PREFIX = "/updates/";
+    // v3.55.59：APK 下载目录（与 UpdateCenter 下载路径一致）
+    private static final String PDNA_UPDATE_DIR = "/sdcard/PDNA/update";
 
     public static Uri getUriForFile(Context context, File file) {
         return Uri.parse("content://" + context.getPackageName() + ".fileprovider" + PATH_PREFIX + file.getName());
@@ -24,17 +26,20 @@ public final class UpdateFileProvider extends ContentProvider {
         if (!"r".equals(mode) || uri.getPath() == null || !uri.getPath().startsWith(PATH_PREFIX)) {
             throw new FileNotFoundException("Read-only update URI required");
         }
-        File cacheDir;
-        File file;
-        try {
-            cacheDir = requireContext().getCacheDir().getCanonicalFile();
-            file = new File(cacheDir, uri.getPath().substring(PATH_PREFIX.length())).getCanonicalFile();
-        } catch (IOException error) {
-            throw new FileNotFoundException("Unable to resolve update APK");
+        String name = uri.getPath().substring(PATH_PREFIX.length());
+        // v3.55.59：依次在 /sdcard/PDNA/update 和 cacheDir 中查找
+        File[] candidates = {
+                new File(PDNA_UPDATE_DIR, name),
+                new File(requireContext().getCacheDir(), name),
+        };
+        File file = null;
+        for (File c : candidates) {
+            try {
+                File canon = c.getCanonicalFile();
+                if (canon.isFile()) { file = canon; break; }
+            } catch (IOException ignored) { }
         }
-        if (!file.getPath().startsWith(cacheDir.getPath() + File.separator) || !file.isFile()) {
-            throw new FileNotFoundException("Update APK not found");
-        }
+        if (file == null) throw new FileNotFoundException("Update APK not found: " + name);
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
